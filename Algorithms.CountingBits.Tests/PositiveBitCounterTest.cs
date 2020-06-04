@@ -47,5 +47,20 @@ namespace Algorithms.CountingBits.Tests
                 actual: this.bitCounter.Count(161).ToList(),
                 message: "The result is not the expected");
         }
+
+        [DataTestMethod]
+        [DataRow(37, "3,0,2,5")]
+        [DataRow(33, "2,0,5")]
+        [DataRow(100, "3,2,5,6")]
+        [DataRow(100, "3,2,5,6")]
+        [DataRow(33566, "7,1,2,3,4,8,9,15")]
+        [DataRow(5424545, "10,0,5,7,8,10,14,15,17,20,22")]
+        public void Count_WithSeveralTestCases_InputShouldReturnExpectedResult(int input, string expectedString)
+        {
+            Assert.AreEqual(
+                expected: expectedString,
+                actual: string.Join(',', bitCounter.Count(input)),
+                message: "The result is not the expected");
+        }
     }
 }
