@@ -4,6 +4,7 @@
 
 namespace Refactoring.FraudDetection
 {
+    using Refactoring.FraudDetection.Helpers;
     using System;
     using System.Collections.Generic;
     using System.IO;
@@ -53,7 +54,9 @@ namespace Refactoring.FraudDetection
                 order.Street = order.Street.Replace("st.", "street").Replace("rd.", "road");
 
                 //Normalize state
-                order.State = order.State.Replace("il", "illinois").Replace("ca", "california").Replace("ny", "new york");
+                order.State = order.State.ReplaceWithPattern(@"\bil\b", "illinois")
+                                         .ReplaceWithPattern(@"\bca\b", "california")
+                                         .ReplaceWithPattern(@"\bny\b", "new york");
             }
 
             // CHECK FRAUD
