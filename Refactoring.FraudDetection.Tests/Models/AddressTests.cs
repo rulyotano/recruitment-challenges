@@ -164,6 +164,39 @@ namespace Refactoring.FraudDetection.Tests.Models
 
         #endregion
 
+        #region City Set
+
+        [TestMethod]
+        public void SetCity_WithNoNormalizer_ShouldSetValue()
+        {
+            var address = BuildAddress();
+
+            address.City = CUSTOM_VALUE;
+
+            address.City.Should().Be(CUSTOM_VALUE);
+        }
+
+        [TestMethod]
+        public void SetCity_WithNormalizer_ShouldSetValueAfterNormalize_WithCommonAndStreet()
+        {
+            var address = BuildAddress();
+            Address.UseNormalizers(GetNormalizerProvider());
+
+            address.City = CUSTOM_VALUE;
+
+            address.City.Should().Contain(CUSTOM_VALUE)
+                .And.Contain(NormalizerTestHelpers.COMMON_NORMALIZER_APPEND1)
+                .And.Contain(NormalizerTestHelpers.COMMON_NORMALIZER_APPEND2)
+                .And.Contain(NormalizerTestHelpers.CITY_NORMALIZER_APPEND1)
+                .And.Contain(NormalizerTestHelpers.CITY_NORMALIZER_APPEND1)
+                .And.NotContain(NormalizerTestHelpers.STREET_NORMALIZER_APPEND1)
+                .And.NotContain(NormalizerTestHelpers.STREET_NORMALIZER_APPEND2)
+                .And.NotContain(NormalizerTestHelpers.STATE_NORMALIZER_APPEND1)
+                .And.NotContain(NormalizerTestHelpers.STATE_NORMALIZER_APPEND2);
+        }
+
+        #endregion
+
         private static Address BuildAddress(string street = FAKE_STREET, string city = FAKE_CITY,
             string state = FAKE_STATE, string zipCode = FAKE_ZIPCODE)
         {

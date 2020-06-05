@@ -2,14 +2,13 @@
 // Copyright (c) Payvision. All rights reserved.
 // </copyright>
 
+using Refactoring.FraudDetection.Normalizers;
+using System;
+using System.Collections.Generic;
+using System.IO;
+
 namespace Refactoring.FraudDetection
 {
-    using Refactoring.FraudDetection.Normalizers;
-    using Refactoring.FraudDetection.Normalizers;
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-
     public class FraudRadar
     {
         public IEnumerable<FraudResult> Check(string filePath)

@@ -8,7 +8,7 @@ namespace Refactoring.FraudDetection.Models.Addresses
     {
         public string Street
         {
-            get => street; 
+            get => street;
             set
             {
                 if (normalizerProvider != null)
@@ -24,7 +24,23 @@ namespace Refactoring.FraudDetection.Models.Addresses
             }
         }
 
-        public string City { get; set; }
+        public string City
+        {
+            get => city;
+            set
+            {
+                if (normalizerProvider != null)
+                {
+                    city = normalizerProvider
+                        .GetNormalizers(it => it is ICommonNormalizer || it is ICitytNormalizer)
+                        .NormalizeAll(value);
+                }
+                else
+                {
+                    city = value;
+                }
+            }
+        }
 
         public string State
         {
@@ -76,5 +92,6 @@ namespace Refactoring.FraudDetection.Models.Addresses
         private static INormalizerProvider normalizerProvider;
         private string state;
         private string street;
+        private string city;
     }
 }

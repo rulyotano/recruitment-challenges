@@ -12,7 +12,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Refactoring.FraudDetection.Tests
 {
     [TestClass]
-    public class FraudRadarTests
+    public class LegacyFraudRadarTests
     {
         [TestMethod]
         [DeploymentItem("./Files/OneLineFile.txt", "Files")]

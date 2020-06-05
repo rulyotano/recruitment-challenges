@@ -16,6 +16,8 @@ namespace Refactoring.FraudDetection.Tests.Normalizers
         public const string STATE_NORMALIZER_APPEND2 = ".state2";
         public const string EMAIL_NORMALIZER_APPEND1 = ".email1";
         public const string EMAIL_NORMALIZER_APPEND2 = ".email2";
+        public const string CITY_NORMALIZER_APPEND1 = ".city";
+        public const string CITY_NORMALIZER_APPEND2 = ".city";
 
         public static IEnumerable<INormalizer> GetFakeNormalizers()
         {
@@ -27,7 +29,9 @@ namespace Refactoring.FraudDetection.Tests.Normalizers
                 GetNormalizerMock<IStateNormalizer>(STATE_NORMALIZER_APPEND1).Object,
                 GetNormalizerMock<IStateNormalizer>(STATE_NORMALIZER_APPEND2).Object,
                 GetNormalizerMock<IEmailNormalizer>(EMAIL_NORMALIZER_APPEND1).Object,
-                GetNormalizerMock<IEmailNormalizer>(EMAIL_NORMALIZER_APPEND2).Object
+                GetNormalizerMock<IEmailNormalizer>(EMAIL_NORMALIZER_APPEND2).Object,
+                GetNormalizerMock<ICitytNormalizer>(CITY_NORMALIZER_APPEND1).Object,
+                GetNormalizerMock<ICitytNormalizer>(CITY_NORMALIZER_APPEND2).Object
             };
         }
 
