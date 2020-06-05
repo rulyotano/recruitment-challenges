@@ -7,7 +7,6 @@ namespace Refactoring.FraudDetection.Normalizers
 {
     public class BasicNormalizerProvider : INormalizerProvider
     {
-
         public IEnumerable<INormalizer> GetNormalizers(Expression<Func<INormalizer, bool>> filter = null)
         {
             if (filter != null)
