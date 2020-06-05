@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using Refactoring.FraudDetection.Models;
 using Refactoring.FraudDetection.Models.Addresses;
 using Refactoring.FraudDetection.Normalizers;
@@ -11,10 +12,20 @@ namespace Refactoring.FraudDetection.Tests.Models
     [TestClass]
     public class OrderTests
     {
+        [TestInitialize]
+        public void InitializeTests()
+        {
+            orderParserMock = new Mock<IOrderParser>();
+            orderParserMock.Setup(it => it.Parse(It.IsAny<string>()))
+                .Returns(ParsedOrder);
+            OrderParser.Current = orderParserMock.Object;
+        }
+
         [TestCleanup]
         public void CleanTests()
         {
             Order.UseNormalizers(null);
+            OrderParser.Current = new DefaultOrderParser();
         }
 
         #region Constructors
@@ -80,7 +91,7 @@ namespace Refactoring.FraudDetection.Tests.Models
                 .And.NotContain(NormalizerTestHelpers.STREET_NORMALIZER_APPEND1)
                 .And.NotContain(NormalizerTestHelpers.STREET_NORMALIZER_APPEND2);
         }
-        
+
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         [DataRow("wrong_address")]
@@ -108,69 +119,13 @@ namespace Refactoring.FraudDetection.Tests.Models
         #region Parse
 
         [TestMethod]
-        public void Parse_WithValidFormatShould_ReturnOrderWithAllFields()
+        public void Parse_ShouldCallStaticOrderParserCurrent()
         {
-            var order = Order.Parse($"{FAKE_ORDER_ID},{FAKE_DEAL_ID},{FAKE_EMAIL},{FAKE_ADDRESS.Street},{FAKE_ADDRESS.City},{FAKE_ADDRESS.State},{FAKE_ADDRESS.ZipCode},{FAKE_CARD}");
+            var parserInput = $"{FAKE_ORDER_ID},{FAKE_DEAL_ID},{FAKE_EMAIL},{FAKE_ADDRESS.Street},{FAKE_ADDRESS.City},{FAKE_ADDRESS.State},{FAKE_ADDRESS.ZipCode},{FAKE_CARD}";
+            var order = Order.Parse(parserInput);
 
-            order.OrderId.Should().Be(FAKE_ORDER_ID);
-            order.DealId.Should().Be(FAKE_DEAL_ID);
-            order.Email.Should().Be(FAKE_EMAIL);
-            order.Address.Street.Should().Be(FAKE_ADDRESS.Street);
-            order.Address.City.Should().Be(FAKE_ADDRESS.City);
-            order.Address.State.Should().Be(FAKE_ADDRESS.State);
-            order.Address.ZipCode.Should().Be(FAKE_ADDRESS.ZipCode);
-            order.CreditCard.Should().Be(FAKE_CARD);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void Parse_WithNullString_ShouldRaiseArgumentException()
-        {
-            Order.Parse(null);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void Parse_WithEmptyString_ShouldRaiseArgumentException()
-        {
-            Order.Parse("");
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void Parse_WithLessFields_ShouldRaiseArgumentException()
-        {
-            Order.Parse($"{FAKE_ORDER_ID},{FAKE_DEAL_ID},{FAKE_EMAIL},{FAKE_ADDRESS.Street},{FAKE_ADDRESS.City},{FAKE_ADDRESS.State},{FAKE_ADDRESS.ZipCode}");
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void Parse_WithEmptyFied_ShouldRaiseArgumentException()
-        {
-            Order.Parse($"{FAKE_ORDER_ID},{FAKE_DEAL_ID},{FAKE_EMAIL},{FAKE_ADDRESS.Street},,{FAKE_ADDRESS.State},{FAKE_ADDRESS.ZipCode},{FAKE_CARD}");
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void Parse_WithNoNumberOrderId_RaiseArgumentException()
-        {
-            Order.Parse($"orderId,{FAKE_DEAL_ID},{FAKE_EMAIL},{FAKE_ADDRESS.Street},{FAKE_ADDRESS.City},{FAKE_ADDRESS.State},{FAKE_ADDRESS.ZipCode},{FAKE_CARD}");
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void Parse_WithNoNumberDeailId_RaiseArgumentException()
-        {
-            Order.Parse($"{FAKE_ORDER_ID},dealId,{FAKE_EMAIL},{FAKE_ADDRESS.Street},{FAKE_ADDRESS.City},{FAKE_ADDRESS.State},{FAKE_ADDRESS.ZipCode},{FAKE_CARD}");
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        [DataRow("wrong@.address")]
-        [DataRow("wrong_address")]
-        public void Parse_WithInvalidEmail_RaiseArgumentException(string wrongAddress)
-        {
-            Order.Parse($"{FAKE_ORDER_ID},{FAKE_DEAL_ID},{wrongAddress},{FAKE_ADDRESS.Street},{FAKE_ADDRESS.City},{FAKE_ADDRESS.State},{FAKE_ADDRESS.ZipCode},{FAKE_CARD}");
+            orderParserMock.Verify(it => it.Parse(parserInput));
+            order.Should().Be(ParsedOrder);
         }
 
         #endregion
@@ -187,11 +142,13 @@ namespace Refactoring.FraudDetection.Tests.Models
             return new Order(orderId, dealId, email, addressArgument, card);
         }
 
+        private Order ParsedOrder = BuildOrder(orderId: PARSED_ORDER_ID);
+        private Mock<IOrderParser> orderParserMock;
+        private const int PARSED_ORDER_ID = 33;
         private const int FAKE_ORDER_ID = 5;
         private const int FAKE_DEAL_ID = 6;
         private const string FAKE_EMAIL = "fake@email.com";
         private const string FAKE_CARD = "fake-card";
-        private const string CUSTOM_VALUE = "custom-value";
         private static readonly Address FAKE_ADDRESS = new Address("fake-street", "fake-city", "fake-state", "fake-zip-code");
     }
 }
