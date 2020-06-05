@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace Refactoring.FraudDetection.Helpers
+namespace Refactoring.FraudDetection.Normalizers
 {
     public static class StringHelpers
     {

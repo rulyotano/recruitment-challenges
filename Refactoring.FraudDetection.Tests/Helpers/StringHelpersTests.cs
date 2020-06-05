@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Refactoring.FraudDetection.Helpers;
+using Refactoring.FraudDetection.Normalizers;
+using Refactoring.FraudDetection.Normalizers;
 
 namespace Refactoring.FraudDetection.Tests.Helpers
 {

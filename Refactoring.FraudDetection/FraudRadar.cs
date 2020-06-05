@@ -4,7 +4,8 @@
 
 namespace Refactoring.FraudDetection
 {
-    using Refactoring.FraudDetection.Helpers;
+    using Refactoring.FraudDetection.Normalizers;
+    using Refactoring.FraudDetection.Normalizers;
     using System;
     using System.Collections.Generic;
     using System.IO;
