@@ -2,7 +2,7 @@
 using Refactoring.FraudDetection.Normalizers.Common;
 using System;
 
-namespace Refactoring.FraudDetection.Models.Addresses
+namespace Refactoring.FraudDetection.Models
 {
     public class Address : IEquatable<Address>
     {

@@ -1,5 +1,4 @@
-﻿using Refactoring.FraudDetection.Models.Addresses;
-using System;
+﻿using System;
 
 namespace Refactoring.FraudDetection.Models
 {

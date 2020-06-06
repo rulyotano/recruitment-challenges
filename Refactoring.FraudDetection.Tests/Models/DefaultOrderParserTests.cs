@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Refactoring.FraudDetection.Models;
-using Refactoring.FraudDetection.Models.Addresses;
 using Refactoring.FraudDetection.Normalizers;
 using System;
 

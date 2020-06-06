@@ -1,5 +1,4 @@
-﻿using Refactoring.FraudDetection.Models.Addresses;
-using Refactoring.FraudDetection.Normalizers;
+﻿using Refactoring.FraudDetection.Normalizers;
 using Refactoring.FraudDetection.Normalizers.Common;
 using System;
 
