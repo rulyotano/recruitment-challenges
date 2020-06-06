@@ -6,8 +6,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Refactoring.FraudDetection.Models;
 
 namespace Refactoring.FraudDetection.Tests
 {
@@ -16,9 +18,9 @@ namespace Refactoring.FraudDetection.Tests
     {
         [TestMethod]
         [DeploymentItem("./Files/OneLineFile.txt", "Files")]
-        public void CheckFraud_OneLineFile_NoFraudExpected()
+        public async Task CheckFraud_OneLineFile_NoFraudExpected()
         {
-            var result = ExecuteTest(Path.Combine(Environment.CurrentDirectory, "Files", "OneLineFile.txt"));
+            var result = await ExecuteTest(Path.Combine(Environment.CurrentDirectory, "Files", "OneLineFile.txt"));
 
             result.Should().NotBeNull("The result should not be null.");
             result.Should().HaveCount(0, "The result should not contains fraudulent lines");
@@ -26,9 +28,9 @@ namespace Refactoring.FraudDetection.Tests
 
         [TestMethod]
         [DeploymentItem("./Files/TwoLines_FraudulentSecond.txt", "Files")]
-        public void CheckFraud_TwoLines_SecondLineFraudulent()
+        public async Task CheckFraud_TwoLines_SecondLineFraudulent()
         {
-            var result = ExecuteTest(Path.Combine(Environment.CurrentDirectory, "Files", "TwoLines_FraudulentSecond.txt"));
+            var result = await ExecuteTest(Path.Combine(Environment.CurrentDirectory, "Files", "TwoLines_FraudulentSecond.txt"));
 
             result.Should().NotBeNull("The result should not be null.");
             result.Should().HaveCount(1, "The result should contains the number of lines of the file");
@@ -38,9 +40,9 @@ namespace Refactoring.FraudDetection.Tests
 
         [TestMethod]
         [DeploymentItem("./Files/ThreeLines_FraudulentSecond.txt", "Files")]
-        public void CheckFraud_ThreeLines_SecondLineFraudulent()
+        public async Task CheckFraud_ThreeLines_SecondLineFraudulent()
         {
-            var result = ExecuteTest(Path.Combine(Environment.CurrentDirectory, "Files", "ThreeLines_FraudulentSecond.txt"));
+            var result = await ExecuteTest(Path.Combine(Environment.CurrentDirectory, "Files", "ThreeLines_FraudulentSecond.txt"));
 
             result.Should().NotBeNull("The result should not be null.");
             result.Should().HaveCount(1, "The result should contains the number of lines of the file");
@@ -50,9 +52,9 @@ namespace Refactoring.FraudDetection.Tests
 
         [TestMethod]
         [DeploymentItem("./Files/FourLines_MoreThanOneFraudulent.txt", "Files")]
-        public void CheckFraud_FourLines_MoreThanOneFraudulent()
+        public async Task CheckFraud_FourLines_MoreThanOneFraudulent()
         {
-            var result = ExecuteTest(Path.Combine(Environment.CurrentDirectory, "Files", "FourLines_MoreThanOneFraudulent.txt"));
+            var result = await ExecuteTest(Path.Combine(Environment.CurrentDirectory, "Files", "FourLines_MoreThanOneFraudulent.txt"));
 
             result.Should().NotBeNull("The result should not be null.");
             result.Should().HaveCount(2, "The result should contains the number of lines of the file");
@@ -60,9 +62,9 @@ namespace Refactoring.FraudDetection.Tests
 
         [TestMethod]
         [DeploymentItem("./Files/TwoLines_FraudulentSecond_ByDiffEmails_SameAddress_DiffCards", "Files")]
-        public void FraudulentSecond_TwoLines_ByDiffEmails_SameAddress_DiffCards()
+        public async Task FraudulentSecond_TwoLines_ByDiffEmails_SameAddress_DiffCards()
         {
-            var result = ExecuteTest(Path.Combine(Environment.CurrentDirectory, "Files", "TwoLines_FraudulentSecond_ByDiffEmails_SameAddress_DiffCards.txt"));
+            var result = await ExecuteTest(Path.Combine(Environment.CurrentDirectory, "Files", "TwoLines_FraudulentSecond_ByDiffEmails_SameAddress_DiffCards.txt"));
 
             result.Should().NotBeNull("The result should not be null.");
             result.Should().HaveCount(1, "The result should contains the number of lines of the file");
@@ -70,9 +72,9 @@ namespace Refactoring.FraudDetection.Tests
 
         [TestMethod]
         [DeploymentItem("./Files/TwoLines_FraudulentSecond_SameEmailsAfterNormalized", "Files")]
-        public void FraudulentSecond_TwoLines_SameEmailsAfterNormalize()
+        public async Task FraudulentSecond_TwoLines_SameEmailsAfterNormalize()
         {
-            var result = ExecuteTest(Path.Combine(Environment.CurrentDirectory, "Files", "TwoLines_FraudulentSecond_SameEmailsAfterNormalized.txt"));
+            var result = await ExecuteTest(Path.Combine(Environment.CurrentDirectory, "Files", "TwoLines_FraudulentSecond_SameEmailsAfterNormalized.txt"));
 
             result.Should().NotBeNull("The result should not be null.");
             result.Should().HaveCount(1, "The result should contains the number of lines of the file");
@@ -80,9 +82,9 @@ namespace Refactoring.FraudDetection.Tests
 
         [TestMethod]
         [DeploymentItem("./Files/SixLines_FraudulentMultiples_SameAddressAfterNormalized.txt", "Files")]
-        public void CheckFraud_SixLines_SameAddressAfterNormalize()
+        public async Task CheckFraud_SixLines_SameAddressAfterNormalize()
         {
-            var result = ExecuteTest(Path.Combine(Environment.CurrentDirectory, "Files", "SixLines_FraudulentMultiples_SameAddressAfterNormalized.txt"));
+            var result = await ExecuteTest(Path.Combine(Environment.CurrentDirectory, "Files", "SixLines_FraudulentMultiples_SameAddressAfterNormalized.txt"));
             Func<int, string> kLineIsFraudulent = k => $"The line number ${k} is not fraudulent";
 
             result.Should().NotBeNull("The result should not be null.");
@@ -95,11 +97,11 @@ namespace Refactoring.FraudDetection.Tests
             result.Skip(2).First().OrderId.Should().Be(6, kLineIsFraudulent(6));
         }
 
-        private static List<FraudRadarLegacy.FraudResult> ExecuteTest(string filePath)
+        private static async Task<List<FraudResult>> ExecuteTest(string filePath)
         {
-            var fraudRadar = new FraudRadarLegacy();
+            var fraudRadar = new FraudRadarFromFile();
 
-            return fraudRadar.Check(filePath).ToList();
+            return (await fraudRadar.Check(filePath)).ToList();
         }
     }
 }
