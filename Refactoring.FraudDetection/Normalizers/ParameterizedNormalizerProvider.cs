@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace Refactoring.FraudDetection.Normalizers
 {
-    public class BasicNormalizerProvider : INormalizerProvider
+    public class ParameterizedNormalizerProvider : INormalizerProvider
     {
         public IEnumerable<INormalizer> GetNormalizers(Expression<Func<INormalizer, bool>> filter = null)
         {
@@ -16,7 +16,7 @@ namespace Refactoring.FraudDetection.Normalizers
             return normalizers;
         }
 
-        public BasicNormalizerProvider(IEnumerable<INormalizer> normalizers)
+        public ParameterizedNormalizerProvider(IEnumerable<INormalizer> normalizers)
         {
             this.normalizers = normalizers;
         }

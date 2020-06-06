@@ -11,6 +11,7 @@ namespace Refactoring.FraudDetection.Models.Addresses
             get => street;
             set
             {
+                var normalizerProvider = GetNormalizerProvider();
                 if (normalizerProvider != null)
                 {
                     street = normalizerProvider
@@ -29,6 +30,7 @@ namespace Refactoring.FraudDetection.Models.Addresses
             get => city;
             set
             {
+                var normalizerProvider = GetNormalizerProvider();
                 if (normalizerProvider != null)
                 {
                     city = normalizerProvider
@@ -47,6 +49,7 @@ namespace Refactoring.FraudDetection.Models.Addresses
             get => state;
             set
             {
+                var normalizerProvider = GetNormalizerProvider();
                 if (normalizerProvider != null)
                 {
                     state = normalizerProvider
@@ -60,7 +63,24 @@ namespace Refactoring.FraudDetection.Models.Addresses
             }
         }
 
-        public string ZipCode { get; set; }
+        public string ZipCode
+        {
+            get => zipCode;
+            set
+            {
+                var normalizerProvider = GetNormalizerProvider();
+                if (normalizerProvider != null)
+                {
+                    zipCode = normalizerProvider
+                        .GetNormalizers(it => it is ICommonNormalizer)
+                        .NormalizeAll(value);
+                }
+                else
+                {
+                    zipCode = value;
+                }
+            }
+        }
 
         public bool Equals(Address other)
         {
@@ -75,11 +95,6 @@ namespace Refactoring.FraudDetection.Models.Addresses
             return true;
         }
 
-        public static void UseNormalizers(INormalizerProvider normalizerProvider)
-        {
-            Address.normalizerProvider = normalizerProvider;
-        }
-
         public Address(string street, string city,
             string state, string zipCode)
         {
@@ -89,9 +104,10 @@ namespace Refactoring.FraudDetection.Models.Addresses
             ZipCode = zipCode;
         }
 
-        private static INormalizerProvider normalizerProvider;
+        private static Func<INormalizerProvider> GetNormalizerProvider = () => NormalizerProvider.Current;
         private string state;
         private string street;
         private string city;
+        private string zipCode;
     }
 }

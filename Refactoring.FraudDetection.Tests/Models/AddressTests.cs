@@ -14,10 +14,16 @@ namespace Refactoring.FraudDetection.Tests.Models
     [TestClass]
     public class AddressTests
     {
+        [TestInitialize]
+        public void InitializeTests()
+        {
+            NormalizerProvider.Current = null;
+        }
+
         [TestCleanup]
         public void CleanTests()
         {
-            Address.UseNormalizers(null);
+            NormalizerProvider.Current = new DefaultNormalizerProvider();
         }
 
         #region Constructors
@@ -118,7 +124,7 @@ namespace Refactoring.FraudDetection.Tests.Models
         public void SetStreet_WithNormalizer_ShouldSetValueAfterNormalize_WithCommonAndStreet()
         {
             var address = BuildAddress();
-            Address.UseNormalizers(GetNormalizerProvider());
+            NormalizerProvider.Current = GetNormalizerProvider();
 
             address.Street = CUSTOM_VALUE;
 
@@ -149,7 +155,7 @@ namespace Refactoring.FraudDetection.Tests.Models
         public void SetState_WithNormalizer_ShouldSetValueAfterNormalize_WithCommonAndStreet()
         {
             var address = BuildAddress();
-            Address.UseNormalizers(GetNormalizerProvider());
+            NormalizerProvider.Current = GetNormalizerProvider();
 
             address.State = CUSTOM_VALUE;
 
@@ -180,7 +186,7 @@ namespace Refactoring.FraudDetection.Tests.Models
         public void SetCity_WithNormalizer_ShouldSetValueAfterNormalize_WithCommonAndStreet()
         {
             var address = BuildAddress();
-            Address.UseNormalizers(GetNormalizerProvider());
+            NormalizerProvider.Current = GetNormalizerProvider();
 
             address.City = CUSTOM_VALUE;
 
@@ -197,6 +203,39 @@ namespace Refactoring.FraudDetection.Tests.Models
 
         #endregion
 
+        #region Zip Code Set
+
+        [TestMethod]
+        public void SetZipCode_WithNoNormalizer_ShouldSetValue()
+        {
+            var address = BuildAddress();
+
+            address.ZipCode = CUSTOM_VALUE;
+
+            address.ZipCode.Should().Be(CUSTOM_VALUE);
+        }
+
+        [TestMethod]
+        public void SetZipCode_WithNormalizer_ShouldSetValueAfterNormalize_WithCommonAndStreet()
+        {
+            var address = BuildAddress();
+            NormalizerProvider.Current = GetNormalizerProvider();
+
+            address.ZipCode = CUSTOM_VALUE;
+
+            address.ZipCode.Should().Contain(CUSTOM_VALUE)
+                .And.Contain(NormalizerTestHelpers.COMMON_NORMALIZER_APPEND1)
+                .And.Contain(NormalizerTestHelpers.COMMON_NORMALIZER_APPEND2)
+                .And.NotContain(NormalizerTestHelpers.CITY_NORMALIZER_APPEND1)
+                .And.NotContain(NormalizerTestHelpers.CITY_NORMALIZER_APPEND1)
+                .And.NotContain(NormalizerTestHelpers.STREET_NORMALIZER_APPEND1)
+                .And.NotContain(NormalizerTestHelpers.STREET_NORMALIZER_APPEND2)
+                .And.NotContain(NormalizerTestHelpers.STATE_NORMALIZER_APPEND1)
+                .And.NotContain(NormalizerTestHelpers.STATE_NORMALIZER_APPEND2);
+        }
+
+        #endregion
+
         private static Address BuildAddress(string street = FAKE_STREET, string city = FAKE_CITY,
             string state = FAKE_STATE, string zipCode = FAKE_ZIPCODE)
         {
@@ -205,7 +244,7 @@ namespace Refactoring.FraudDetection.Tests.Models
 
         private static INormalizerProvider GetNormalizerProvider()
         {
-            return new BasicNormalizerProvider(NormalizerTestHelpers.GetFakeNormalizers());
+            return new ParameterizedNormalizerProvider(NormalizerTestHelpers.GetFakeNormalizers());
         }
 
         private const string FAKE_STREET = "fake-street";

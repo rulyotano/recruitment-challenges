@@ -7,8 +7,8 @@ namespace Refactoring.FraudDetection.Normalizers.Implementations.Streets
         public string Normalize(string test)
         {
             return test
-                .ReplaceWithPattern(@"\bst.", "street")
-                .ReplaceWithPattern(@"\brd.", "road");
+                .ReplaceWithPattern(@"\bst\.", "street")
+                .ReplaceWithPattern(@"\brd\.", "road");
         }
     }
 }

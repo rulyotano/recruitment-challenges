@@ -24,6 +24,17 @@ namespace Refactoring.FraudDetection.Tests.Normalizers.Implementations.Streets
         }
 
         [TestMethod]
+        public void Normalize_WhenStreetShouldReturnStreet()
+        {
+            var normalizer = GetNormalizer();
+            var input = "street";
+            var expected = "street";
+
+            var result = normalizer.Normalize(input);
+            result.Should().Be(expected);
+        }
+
+        [TestMethod]
         public void Normalize_ShouldReplaceRdPerRoad()
         {
             var normalizer = GetNormalizer();

@@ -8,16 +8,16 @@ namespace Refactoring.FraudDetection.Tests.Normalizers
 {
     public static class NormalizerTestHelpers
     {
-        public const string COMMON_NORMALIZER_APPEND1 = ".common1";
-        public const string COMMON_NORMALIZER_APPEND2 = ".common2";
-        public const string STREET_NORMALIZER_APPEND1 = ".street1";
-        public const string STREET_NORMALIZER_APPEND2 = ".street2";
-        public const string STATE_NORMALIZER_APPEND1 = ".state1";
-        public const string STATE_NORMALIZER_APPEND2 = ".state2";
-        public const string EMAIL_NORMALIZER_APPEND1 = ".email1";
-        public const string EMAIL_NORMALIZER_APPEND2 = ".email2";
-        public const string CITY_NORMALIZER_APPEND1 = ".city";
-        public const string CITY_NORMALIZER_APPEND2 = ".city";
+        public const string COMMON_NORMALIZER_APPEND1 = "common1";
+        public const string COMMON_NORMALIZER_APPEND2 = "common2";
+        public const string STREET_NORMALIZER_APPEND1 = "street1";
+        public const string STREET_NORMALIZER_APPEND2 = "street2";
+        public const string STATE_NORMALIZER_APPEND1 = "state1";
+        public const string STATE_NORMALIZER_APPEND2 = "state2";
+        public const string EMAIL_NORMALIZER_APPEND1 = "email1";
+        public const string EMAIL_NORMALIZER_APPEND2 = "email2";
+        public const string CITY_NORMALIZER_APPEND1 = "city1";
+        public const string CITY_NORMALIZER_APPEND2 = "city2";
 
         public static IEnumerable<INormalizer> GetFakeNormalizers()
         {

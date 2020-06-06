@@ -26,9 +26,9 @@ namespace Refactoring.FraudDetection.Tests.Normalizers
 
         #endregion
 
-        private static BasicNormalizerProvider BuildBasicNormalizerProvider()
+        private static ParameterizedNormalizerProvider BuildBasicNormalizerProvider()
         {
-            return new BasicNormalizerProvider(NormalizerTestHelpers.GetFakeNormalizers());
+            return new ParameterizedNormalizerProvider(NormalizerTestHelpers.GetFakeNormalizers());
         }
 
         private const string BASE_VALUE = "base-value";

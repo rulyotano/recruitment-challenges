@@ -19,13 +19,14 @@ namespace Refactoring.FraudDetection.Tests.Models
             orderParserMock.Setup(it => it.Parse(It.IsAny<string>()))
                 .Returns(ParsedOrder);
             OrderParser.Current = orderParserMock.Object;
+            NormalizerProvider.Current = null;
         }
 
         [TestCleanup]
         public void CleanTests()
         {
-            Order.UseNormalizers(null);
             OrderParser.Current = new DefaultOrderParser();
+            NormalizerProvider.Current = new DefaultNormalizerProvider();
         }
 
         #region Constructors
@@ -77,7 +78,7 @@ namespace Refactoring.FraudDetection.Tests.Models
         public void SetEmail_WithNormalizer_ShouldSetValueAfterNormalize_WithCommonAndEmail()
         {
             var order = BuildOrder();
-            Order.UseNormalizers(GetNormalizerProvider());
+            NormalizerProvider.Current = GetNormalizerProvider();
 
             order.Email = FAKE_EMAIL;
 
@@ -110,10 +111,43 @@ namespace Refactoring.FraudDetection.Tests.Models
         public void SetEmail_WithInvalidEmailAddress_WithNormalizer_RaiseArgumentException(string invalidEmailAddress)
         {
             var order = BuildOrder();
-            Order.UseNormalizers(GetNormalizerProvider());
+            NormalizerProvider.Current = GetNormalizerProvider();
 
             order.Email = invalidEmailAddress;
         }
+        #endregion
+
+        #region Card Set
+
+        [TestMethod]
+        public void SetCard_WithNoNormalizer_ShouldSetValue()
+        {
+            var order = BuildOrder();
+
+            order.CreditCard = FAKE_EMAIL;
+
+            order.CreditCard.Should().Be(FAKE_EMAIL);
+        }
+
+        [TestMethod]
+        public void SetCard_WithNormalizer_ShouldSetValueAfterNormalize_WithCommonAndEmail()
+        {
+            var order = BuildOrder();
+            NormalizerProvider.Current = GetNormalizerProvider();
+
+            order.CreditCard = FAKE_EMAIL;
+
+            order.CreditCard.Should().Contain(FAKE_EMAIL)
+                .And.Contain(NormalizerTestHelpers.COMMON_NORMALIZER_APPEND1)
+                .And.Contain(NormalizerTestHelpers.COMMON_NORMALIZER_APPEND2)
+                .And.NotContain(NormalizerTestHelpers.EMAIL_NORMALIZER_APPEND1)
+                .And.NotContain(NormalizerTestHelpers.EMAIL_NORMALIZER_APPEND2)
+                .And.NotContain(NormalizerTestHelpers.STATE_NORMALIZER_APPEND1)
+                .And.NotContain(NormalizerTestHelpers.STATE_NORMALIZER_APPEND2)
+                .And.NotContain(NormalizerTestHelpers.STREET_NORMALIZER_APPEND1)
+                .And.NotContain(NormalizerTestHelpers.STREET_NORMALIZER_APPEND2);
+        }
+
         #endregion
 
         #region Parse
@@ -132,7 +166,7 @@ namespace Refactoring.FraudDetection.Tests.Models
 
         private static INormalizerProvider GetNormalizerProvider()
         {
-            return new BasicNormalizerProvider(NormalizerTestHelpers.GetFakeNormalizers());
+            return new ParameterizedNormalizerProvider(NormalizerTestHelpers.GetFakeNormalizers());
         }
 
         private static Order BuildOrder(int orderId = FAKE_ORDER_ID, int dealId = FAKE_DEAL_ID,

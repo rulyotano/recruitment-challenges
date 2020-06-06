@@ -16,6 +16,7 @@ namespace Refactoring.FraudDetection.Models
             get => email;
             set
             {
+                var normalizerProvider = GetNormalizerProvider();
                 if (normalizerProvider != null)
                 {
                     email = ValidateEmailAddress(normalizerProvider
@@ -31,16 +32,28 @@ namespace Refactoring.FraudDetection.Models
 
         public Address Address { get; set; }
 
-        public string CreditCard { get; set; }
+        public string CreditCard
+        {
+            get => creditCard;
+            set
+            {
+                var normalizerProvider = GetNormalizerProvider();
+                if (normalizerProvider != null)
+                {
+                    creditCard = normalizerProvider
+                                    .GetNormalizers(it => it is ICommonNormalizer)
+                                    .NormalizeAll(value);
+                }
+                else
+                {
+                    creditCard = value;
+                }
+            }
+        }
 
         public static Order Parse(string s)
         {
             return OrderParser.Current.Parse(s);
-        }
-
-        public static void UseNormalizers(INormalizerProvider normalizerProvider)
-        {
-            Order.normalizerProvider = normalizerProvider;
         }
 
         public Order(int orderId, int dealId, string email, Address address, string creditCard)
@@ -66,7 +79,8 @@ namespace Refactoring.FraudDetection.Models
         }
 
         private string email;
-        private static INormalizerProvider normalizerProvider;
+        private static Func<INormalizerProvider> GetNormalizerProvider = () => NormalizerProvider.Current;
+        private string creditCard;
         private const string PARSE_INVALID_EMAIL_EXCEPTION_TEXT = "Invalid email address";
     }
 }

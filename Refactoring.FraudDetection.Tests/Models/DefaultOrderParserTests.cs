@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Refactoring.FraudDetection.Models;
 using Refactoring.FraudDetection.Models.Addresses;
+using Refactoring.FraudDetection.Normalizers;
 using System;
 
 namespace Refactoring.FraudDetection.Tests.Models
@@ -9,12 +10,42 @@ namespace Refactoring.FraudDetection.Tests.Models
     [TestClass]
     public class DefaultOrderParserTests
     {
+        [TestInitialize]
+        public void InitializeTests()
+        {
+            NormalizerProvider.Current = null;
+        }
+
+        [TestCleanup]
+        public void CleanTests()
+        {
+            NormalizerProvider.Current = new DefaultNormalizerProvider();
+        }
+
         #region Parse
 
         [TestMethod]
         public void Parse_WithValidFormatShould_ReturnOrderWithAllFields()
         {
             var order = GetDefaultOrderParser().Parse($"{FAKE_ORDER_ID},{FAKE_DEAL_ID},{FAKE_EMAIL},{FAKE_ADDRESS.Street},{FAKE_ADDRESS.City},{FAKE_ADDRESS.State},{FAKE_ADDRESS.ZipCode},{FAKE_CARD}");
+
+            order.OrderId.Should().Be(FAKE_ORDER_ID);
+            order.DealId.Should().Be(FAKE_DEAL_ID);
+            order.Email.Should().Be(FAKE_EMAIL);
+            order.Address.Street.Should().Be(FAKE_ADDRESS.Street);
+            order.Address.City.Should().Be(FAKE_ADDRESS.City);
+            order.Address.State.Should().Be(FAKE_ADDRESS.State);
+            order.Address.ZipCode.Should().Be(FAKE_ADDRESS.ZipCode);
+            order.CreditCard.Should().Be(FAKE_CARD);
+        }
+
+        [TestMethod]
+        public void Parse_ShouldApplyCommonProcessorsToFields()
+        {
+            NormalizerProvider.Current = new DefaultNormalizerProvider();
+
+            var order = GetDefaultOrderParser()
+             .Parse($"  {FAKE_ORDER_ID}  ,  {FAKE_DEAL_ID}  ,   {FAKE_EMAIL.ToUpperInvariant()}   ,   {FAKE_ADDRESS.Street.ToUpperInvariant()}  ,   {FAKE_ADDRESS.City.ToUpperInvariant()}   ,    {FAKE_ADDRESS.State.ToUpperInvariant()}   ,    {FAKE_ADDRESS.ZipCode.ToUpperInvariant()}   ,   {FAKE_CARD.ToUpperInvariant()}  ");
 
             order.OrderId.Should().Be(FAKE_ORDER_ID);
             order.DealId.Should().Be(FAKE_DEAL_ID);
