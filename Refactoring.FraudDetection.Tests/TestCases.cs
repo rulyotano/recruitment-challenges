@@ -94,5 +94,18 @@ namespace Refactoring.FraudDetection.Tests
                 };
             }
         }
+
+        public static IEnumerable<Order> ThreeLinesRepeatedId
+        {
+            get
+            {
+                return new Order[]
+                {
+                    Order.Parse("1,1,bugs@bunny.com,123 Sesame St.,New York,NY,10011,12345689010"),
+                    Order.Parse("2,1,bugs@bunny.com,123 Sesame St.,New York,NY,10011,12345689011"),
+                    Order.Parse("1,2,roger@rabbit.com,1234 Not Sesame St.,Colorado,CL,10012,12345689012"),
+                };
+            }
+        }
     }
 }
